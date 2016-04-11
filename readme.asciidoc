@@ -1,6 +1,5 @@
 = smail: Send emails on the commandline, using Gmail API
 
-This project is discontinued because zip files uploaded through its Java API are immediately corrupt.  I am working on a similar project using dropbox.
 
 == Installation under Unix-like systems
 
