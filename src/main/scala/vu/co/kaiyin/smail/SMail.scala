@@ -78,9 +78,9 @@ object SMail {
 
   val doc =
     """Usage:
-      |  smail send (-t <to>)... -s <subj> [-b <body>] [(-a <attach>)...] [(-l <label>)...]
+      |  smail send (-t <to>)... -s <subj>   [-b <body>] [(-a <attach>)...] [(-l <label>)...]
       |  smail send -m <msgfile>
-      |  smail draft (-t <to>)... -s <subj> [-b <body>] [(-a <attach>)...] [(-l <label>)...]
+      |  smail draft (-t <to>)... -s <subj>  [-b <body>] [(-a <attach>)...] [(-l <label>)...]
       |  smail draft -m <msgfile>
       |  smail insert (-t <to>)... -s <subj> [-b <body>] [(-a <attach>)...] [(-l <label>)...]
       |  smail insert -m <msgfile>
@@ -92,39 +92,6 @@ object SMail {
       |  -a Attachemnt.
       |  -l Label.
       |  -m Use a message file and specify the options in it.
-      |
-      |Details:
-      |  The `-l` option is ignored for the commands `send` and `draft`.
-      |  Example message file:
-      |
-      |[t]
-      |a@a.com, b@b.com
-      |c@c.com
-      |d@d.com, e@e.com
-      |
-      |[s]
-      |Test subject
-      |
-      |[b]
-      |Test mail body.
-      |Say something here.
-      |
-      |[a]
-      |/tmp/test1.pdf
-      |/tmp/test2.pdf
-      |
-      |[l]
-      |label1, label2, label3
-      |label4
-      |label5, label6
-      |
-      |Headers:
-      |
-      |[t]: To recipients. Separated by comma, semicolon, or newline.
-      |[s]: Subject. Can span over multiple lines.
-      |[b]: Mail body. Can span over multiple lines.
-      |[a]: Attachments. File paths. One file per line.
-      |[t]: Labels. Separated by comma, semicolon, or newline.
     """.stripMargin
 
   var msgInfo: MessageInfoIm = _
@@ -158,8 +125,8 @@ object SMail {
     } else {
       msgInfo = MessageInfoIm(
         args1.getStrings("-t").mkString(","),
-        args1.getString("-s").get,
-        args1.getString("-b").get,
+        args1.getString("-s").getOrElse("No subject"),
+        args1.getString("-b").getOrElse(""),
         args1.getStrings("-a").toSet,
         args1.getStrings("-l") match {
           case x if x.isEmpty => Set("smail")
