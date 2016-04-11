@@ -1,4 +1,4 @@
-= sdrive: Upload files to google drive in the commandline
+= smail: Send emails on the commandline, using Gmail API
 
 This project is discontinued because zip files uploaded through its Java API are immediately corrupt.  I am working on a similar project using dropbox.
 
@@ -9,10 +9,10 @@ This project is discontinued because zip files uploaded through its Java API are
 [[app-listing]]
 [source,bash]
 --------
-git clone https://github.com/kindlychung/sdrive
-cd sdrive
+git clone https://github.com/kindlychung/smail
+cd smail
 sbt assembly
-cp target/scala-2.11/scaladrive-assembly-1.0.1.jar ~/opt/jar/
+cp target/scala-2.11/smail-assembly-1.0.jar ~/opt/jar
 --------
 
 .Add an alias in `~/.bash_aliases` (change the path to jar file accordingly):
@@ -20,7 +20,7 @@ cp target/scala-2.11/scaladrive-assembly-1.0.1.jar ~/opt/jar/
 [[app-listing]]
 [source,bash]
 --------
-alias sdrive='java -jar ~/opt/jar/scaladrive-assembly-1.0.1.jar'
+alias smail='java -jar ~/opt/jar/smail-assembly-1.0.jar'
 --------
 
 .Profit!
@@ -28,11 +28,6 @@ alias sdrive='java -jar ~/opt/jar/scaladrive-assembly-1.0.1.jar'
 [[app-listing]]
 [source,bash]
 --------
-sdrive --help
+smail --help
 --------
 
-
-
-
-readme.asciidoc
-src
