@@ -1,0 +1,38 @@
+= sdrive: Upload files to google drive in the commandline
+
+This project is discontinued because zip files uploaded through its Java API are immediately corrupt.  I am working on a similar project using dropbox.
+
+== Installation under Unix-like systems
+
+.Compile and put the jar file somewhere.
+
+[[app-listing]]
+[source,bash]
+--------
+git clone https://github.com/kindlychung/sdrive
+cd sdrive
+sbt assembly
+cp target/scala-2.11/scaladrive-assembly-1.0.1.jar ~/opt/jar/
+--------
+
+.Add an alias in `~/.bash_aliases` (change the path to jar file accordingly):
+
+[[app-listing]]
+[source,bash]
+--------
+alias sdrive='java -jar ~/opt/jar/scaladrive-assembly-1.0.1.jar'
+--------
+
+.Profit!
+
+[[app-listing]]
+[source,bash]
+--------
+sdrive --help
+--------
+
+
+
+
+readme.asciidoc
+src

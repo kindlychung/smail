@@ -1,0 +1,20 @@
+[t]
+a@a.com, b@b.com
+c@c.com
+d@d.com, e@e.com
+
+[s]
+Test subject
+
+[b]
+Test mail body.
+Say something here.
+
+[a]
+/tmp/test1.pdf
+/tmp/test2.pdf
+
+[l]
+label1, label2, label3
+label4
+label5, label6
