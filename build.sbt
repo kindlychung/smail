@@ -1,6 +1,6 @@
 name := "smail"
 
-version := "1.0"
+version := "1.0.1"
 
 scalaVersion := "2.11.8"
 
@@ -32,7 +32,7 @@ libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.6" % "test"
 
 resolvers += "jitpack" at "https://jitpack.io"
 
-libraryDependencies += "com.github.kindlychung" % "docopt.scala" % "0.2.2"
+libraryDependencies += "com.github.kindlychung" % "docopt.scala" % "0.2.3"
 
 // The main class name must be full (including package names)
 mainClass in Compile := Some("vu.co.kaiyin.smail.SMail")

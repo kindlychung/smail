@@ -1,8 +1,8 @@
 package vu.co.kaiyin.smail
 
-import java.io.{File, InputStreamReader}
-import java.util
+import java.io.InputStreamReader
 import java.util.{Calendar, Collections}
+import javax.activation.{CommandMap, MailcapCommandMap}
 
 import com.google.api.client.auth.oauth2.Credential
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp
@@ -13,11 +13,7 @@ import com.google.api.client.http.HttpTransport
 import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.client.util.store.FileDataStoreFactory
 import com.google.api.services.gmail.{Gmail, GmailScopes}
-import com.google.api.services.gmail.model._
 import org.docopt.Docopt
-import vu.co.kaiyin.smail.{MessageInfoIm, MessageParser, MailUtil}
-
-import scala.collection.JavaConversions._
 
 
 object SMail {
@@ -26,7 +22,7 @@ object SMail {
 
   private val APPLICATION_NAME = "Gmail API Java Quickstart"
 
-  private val DATA_STORE_DIR = new java.io.File(System.getProperty("user.home"), ".credentials/gmail-java-quickstart.json")
+  private val DATA_STORE_DIR = new java.io.File(System.getProperty("user.home"), ".credentials/data_store")
 
   private var DATA_STORE_FACTORY: FileDataStoreFactory = _
 
@@ -78,20 +74,20 @@ object SMail {
 
   val doc =
     """Usage:
-      |  smail send (-t <to>)... -s <subj> [-b <body>] [(-a <attach>)...] [(-l <label>)...]
-      |  smail send -m <msgfile>
-      |  smail draft (-t <to>)... -s <subj> [-b <body>] [(-a <attach>)...] [(-l <label>)...]
-      |  smail draft -m <msgfile>
-      |  smail insert (-t <to>)... -s <subj> [-b <body>] [(-a <attach>)...] [(-l <label>)...]
-      |  smail insert -m <msgfile>
+      |  smail send    (-t <to>)... [(-s <subj>)] [(-b <body>)] [(-a <attach>)...] [(-l <label>)...]
+      |  smail send    -m <msgfile>
+      |  smail draft   (-t <to>)... [-s <subj>] [-b <body>] [(-a <attach>)...] [(-l <label>)...]
+      |  smail draft   -m <msgfile>
+      |  smail insert  (-t <to>)... [(-s <subj>)] [(-b <body>)] [(-a <attach>)...] [(-l <label>)...]
+      |  smail insert  -m <msgfile>
       |
       |Options:
-      |  -t Recipient address.
-      |  -s Email subject.
-      |  -b Email body.
-      |  -a Attachemnt.
-      |  -l Label.
-      |  -m Use a message file and specify the options in it.
+      |  -t        Recipient address.
+      |  -s        Email subject. Default to "No subject".
+      |  -b        Email body. Default to empty string.
+      |  -a        Attachemnt.
+      |  -l        Label. Default to "smail".
+      |  -m        Use a message file and specify the options in it.
       |
       |Details:
       |  The `-l` option is ignored for the commands `send` and `draft`.
@@ -129,19 +125,27 @@ object SMail {
 
   var msgInfo: MessageInfoIm = _
 
-  // Here is how
-  //
-  //
   /**
     * Main function.
+    *
+    * Prepare to run examples:
+    * <pre>
+    * cd /tmp
+    * echo f1 > f1.txt && echo f2 > f2.txt
+    * mkdir refs && cd refs
+    * echo x > x.txt && echo y > y.txt
+    * mkdir inner && cd inner
+    * echo x > x.txt && echo y > y.txt
+    * </pre>
     * Some examples:
     * <pre>
-    * smail insert -t goodlychung@gmail.com -t enjoyvic@gmail.com -s "test subj" -b "test body" -a /tmp/f1.txt -a /tmp/f2.txt -a /tmp/refs
-    * smail insert -t goodlychung@gmail.com -t enjoyvic@gmail.com -s "test subj" -b "test body" -a /tmp/f1.txt -a /tmp/f2.txt -a /tmp/refs
-    * smail draft -t goodlychung@gmail.com -t enjoyvic@gmail.com -s "test subj" -b "test body" -a /tmp/f1.txt -a /tmp/f2.txt -a /tmp/refs
-    * smail draft -t goodlychung@gmail.com -t enjoyvic@gmail.com -s "test subj" -b "test body" -a /tmp/f1.txt -a /tmp/f2.txt -a /tmp/refs
-    * smail send -t goodlychung@gmail.com -t enjoyvic@gmail.com -s "test subj" -b "test body" -a /tmp/f1.txt -a /tmp/f2.txt -a /tmp/refs
-    * smail send -t goodlychung@gmail.com -t enjoyvic@gmail.com -s "test subj" -b "test body" -a /tmp/f1.txt -a /tmp/f2.txt -a /tmp/refs
+    * smail insert -t kindlychung@gmail.com -t enjoyvictor1@gmail.com -s "test subj" -b "test body" -a /tmp/f1.txt -a /tmp/f2.txt -a /tmp/refs
+    * smail insert -t kindlychung@gmail.com -t enjoyvictor1@gmail.com -a /tmp/f1.txt -a /tmp/f2.txt -a /tmp/refs
+    * smail insert -t kindlychung@gmail.com -t enjoyvictor1@gmail.com -s "test subj" -b "test body" -a /tmp/f1.txt -a /tmp/f2.txt -a /tmp/refs
+    * smail draft -t kindlychung@gmail.com -t enjoyvictor1@gmail.com -s "test subj" -b "test body" -a /tmp/f1.txt -a /tmp/f2.txt -a /tmp/refs
+    * smail draft -t kindlychung@gmail.com -t enjoyvictor1@gmail.com -s "test subj" -b "test body" -a /tmp/f1.txt -a /tmp/f2.txt -a /tmp/refs
+    * smail send -t kindlychung@gmail.com -t enjoyvictor1@gmail.com -s "test subj" -b "test body" -a /tmp/f1.txt -a /tmp/f2.txt -a /tmp/refs
+    * smail send -t kindlychung@gmail.com -t enjoyvictor1@gmail.com -s "test subj" -b "test body" -a /tmp/f1.txt -a /tmp/f2.txt -a /tmp/refs
     * smail insert -m /tmp/mail.txt
     * smail draft -m /tmp/mail.txt
     * smail send -m /tmp/mail.txt
@@ -150,18 +154,24 @@ object SMail {
     * @param args
     */
   def main(args: Array[String]) {
+    val mc = CommandMap.getDefaultCommandMap.asInstanceOf[MailcapCommandMap]
+    mc.addMailcap("text/html;; x-java-content-handler=com.sun.mail.handlers.text_html")
+    mc.addMailcap("text/xml;; x-java-content-handler=com.sun.mail.handlers.text_xml")
+    mc.addMailcap("text/plain;; x-java-content-handler=com.sun.mail.handlers.text_plain")
+    mc.addMailcap("multipart/*;; x-java-content-handler=com.sun.mail.handlers.multipart_mixed")
+    mc.addMailcap("message/rfc822;; x-java-content- handler=com.sun.mail.handlers.message_rfc822")
     val args1 = Docopt(doc, args)
-    val msgFile = args1.getString("-m")
-    if (msgFile.nonEmpty) {
-      val parser = MessageParser(new java.io.File(msgFile.get))
+    val msgFile = args1.getBoolean("-m", false)
+    if (msgFile) {
+      val parser = MessageParser(new java.io.File(args1.getString("<msgfile>").get))
       msgInfo = parser.parse
     } else {
       msgInfo = MessageInfoIm(
-        args1.getStrings("-t").mkString(","),
-        args1.getString("-s").get,
-        args1.getString("-b").get,
-        args1.getStrings("-a").toSet,
-        args1.getStrings("-l") match {
+        args1.getStrings("<to>").mkString(","),
+        args1.getString("<subj>").getOrElse("No subject"),
+        args1.getString("<body>").getOrElse(""),
+        args1.getStrings("<attach>").toSet,
+        args1.getStrings("<label>") match {
           case x if x.isEmpty => Set("smail")
           case y => y.toSet
         }

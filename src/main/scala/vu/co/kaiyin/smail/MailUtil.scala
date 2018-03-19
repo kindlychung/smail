@@ -18,6 +18,8 @@ import scala.collection.JavaConversions._
 
 case class MailUtil(val user: String, val service: Gmail) {
 
+
+
   def getLabels: util.List[Label] = {
     val listResponse = service.users().labels().list(user).execute()
     val labels = listResponse.getLabels
@@ -30,8 +32,8 @@ case class MailUtil(val user: String, val service: Gmail) {
     var draft = new Draft()
     draft.setMessage(message)
     draft = service.users().drafts().create(user, draft).execute()
-    println("draft id: " + draft.getId)
-    println(draft.toPrettyString())
+    println("Draft created.")
+    println("Draft id: " + draft.getId)
     draft
   }
 
@@ -64,11 +66,12 @@ case class MailUtil(val user: String, val service: Gmail) {
     draft.setId(draftId)
     val message = service.users().drafts().send(user, draft).execute()
     println("Draft with ID: " + draftId + " sent successfully.")
-    println("Draft sent as Message with ID: " + message.getId)
+    println("Message ID: " + message.getId)
   }
 
   /**
     * Create email with attachments
+    *
     * @param to Comma separated list of email addresses
     * @param from
     * @param subject
@@ -163,7 +166,9 @@ case class MailUtil(val user: String, val service: Gmail) {
     */
   def insertMessage(email: MimeMessage, labelList: Seq[String] = Seq.empty, representation: LabelRepresentation = LabelRepresentation.NAME): Message = {
     val message: Message = addLabels(createMessageWithEmail(email), labelList, representation)
-    service.users().messages().insert(user, message).execute()
+    val m = service.users().messages().insert(user, message).execute()
+    println(s"Message inserted. \nID: ${m.getId}")
+    m
   }
 
   def addLabels(message: Message, labelList: Seq[String], representation: LabelRepresentation): Message = {
@@ -191,7 +196,9 @@ case class MailUtil(val user: String, val service: Gmail) {
 
   def sendMessage(email: MimeMessage) = {
     val message = createMessageWithEmail(email)
-    service.users().messages().send(user, message).execute()
+    val m = service.users().messages().send(user, message).execute()
+    println(s"Message sent. \nID: ${m.getId}")
+    m
   }
 }
 

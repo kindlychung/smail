@@ -1,7 +1,6 @@
 package vu.co.kaiyin.smail
 
 import java.io.{File, _}
-import java.nio.charset.Charset
 import java.nio.file.{Path, Paths}
 import java.util.zip.{ZipEntry, ZipOutputStream}
 
