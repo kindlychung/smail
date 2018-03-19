@@ -1,6 +1,8 @@
 = smail: Send emails on the commandline, using Gmail API
 
 
+
+
 == Installation under Unix-like systems
 
 .Compile and put the jar file somewhere.
